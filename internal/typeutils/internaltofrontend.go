@@ -28,6 +28,8 @@ import (
 	"strings"
 	"time"
 
+	"encoding/json"
+
 	"codeberg.org/gruf/go-debug"
 	apimodel "github.com/superseriousbusiness/gotosocial/internal/api/model"
 	"github.com/superseriousbusiness/gotosocial/internal/config"
@@ -1311,6 +1313,8 @@ func (c *Converter) baseStatusToFrontend(
 	*apimodel.Status,
 	error,
 ) {
+
+	fmt.Println("-------------------\n\n\n\n----------------------")
 	// Try to populate status struct pointer fields.
 	// We can continue in many cases of partial failure,
 	// but there are some fields we actually need.
@@ -1398,7 +1402,7 @@ func (c *Converter) baseStatusToFrontend(
 		Mentions:           apiMentions,
 		Tags:               apiTags,
 		Emojis:             apiEmojis,
-		Card:               nil, // TODO: implement cards
+		Card:               (*apimodel.Card)(s.Card),
 		Text:               s.Text,
 		ContentType:        ContentTypeToAPIContentType(s.ContentType),
 		InteractionPolicy:  *apiInteractionPolicy,
@@ -1408,6 +1412,13 @@ func (c *Converter) baseStatusToFrontend(
 		// attempting to preserve semantic intent to keep it readable.
 		SpoilerText: text.ParseHTMLToPlain(s.ContentWarning),
 	}
+
+	jsonBytes, err := json.MarshalIndent(apiStatus, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+
+	log.Errorf(ctx, "here is the APIStatus object: %s", jsonBytes)
 
 	if at := s.EditedAt; !at.IsZero() {
 		timestamp := util.FormatISO8601(at)

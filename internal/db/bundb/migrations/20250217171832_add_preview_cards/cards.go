@@ -15,22 +15,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package model
+// Package gtsmodel contains types used *internally* by GoToSocial and added/removed/selected from the database.
+// These types should never be serialized and/or sent out via public APIs, as they contain sensitive information.
+// The annotation used on these structs is for handling them via the bun-db ORM.
+// See here for more info on bun model annotations: https://bun.uptrace.dev/guide/models.html
+package gtsmodel
 
-// Card represents a rich preview card that is generated using OpenGraph tags from a URL.
-//
-// swagger:model card
 type Card struct {
-	ID string `json:"id"`
+	ID string `bun:"type:CHAR(26),pk,nullzero,notnull,unique"` // Unique identity string.
 	// Location of linked resource.
 	// example: https://buzzfeed.com/some/fuckin/buzzfeed/article
-	URL string `json:"url"`
+	URL string `bun:",nullzero"`
 	// Title of linked resource.
 	// example: Buzzfeed - Is Water Wet?
-	Title string `json:"title"`
+	Title string `bun:",nullzero"`
 	// Description of preview.
 	// example: Is water wet? We're not sure. In this article, we ask an expert...
-	Description string `json:"description"`
+	Description string `bun:",nullzero"`
 	// The type of the preview card.
 	// enum:
 	// - link
@@ -38,30 +39,30 @@ type Card struct {
 	// - video
 	// - rich
 	// example: link
-	Type string `json:"type"`
+	Type string `bun:",nullzero"`
 	// The author of the original resource.
 	// example: weewee@buzzfeed.com
-	AuthorName string `json:"author_name"`
+	AuthorName string `bun:"author_name,nullzero"`
 	// A link to the author of the original resource.
 	// example: https://buzzfeed.com/authors/weewee
-	AuthorURL string `json:"author_url"`
+	AuthorURL string `bun:"author_url,nullzero"`
 	// The provider of the original resource.
 	// example: Buzzfeed
-	ProviderName string `json:"provider_name"`
+	ProviderName string `bun:"provider_name,nullzero"`
 	// A link to the provider of the original resource.
 	// example: https://buzzfeed.com
-	ProviderURL string `json:"provider_url"`
+	ProviderURL string `bun:"provider_url,nullzero"`
 	// HTML to be used for generating the preview card.
-	HTML string `json:"html"`
+	HTML string `bun:",nullzero"`
 	// Width of preview, in pixels.
-	Width int `json:"width"`
+	Width int `bun:",nullzero"`
 	// Height of preview, in pixels.
-	Height int `json:"height"`
+	Height int `bun:",nullzero"`
 	// Preview thumbnail.
 	// example: https://example.org/fileserver/preview/thumb.jpg
-	Image string `json:"image"`
+	Image string `bun:",nullzero"`
 	// Used for photo embeds, instead of custom html.
-	EmbedURL string `json:"embed_url"`
+	EmbedURL string `bun:",nullzero"`
 	// A hash computed by the BlurHash algorithm, for generating colorful preview thumbnails when media has not been downloaded yet.
-	Blurhash string `json:"blurhash"`
+	Blurhash string `bun:",nullzero"`
 }
