@@ -144,8 +144,12 @@ func (p *Processor) Create(
 		if statusID, err = p.backfilledStatusID(ctx, createdAt); err != nil {
 			return nil, gtserror.NewErrorInternalError(err)
 		}
-	}
-
+		// Get preview card
+ 		card, errWithCode := FetchPreview(content.Content, now)
+		if errWithCode != nil {
+			return nil, errWithCode
+		}
+		
 	status := &gtsmodel.Status{
 		ID:                       statusID,
 		URI:                      accountURIs.StatusesURI + "/" + statusID,
@@ -187,6 +191,10 @@ func (p *Processor) Create(
 		// Assume not pending approval; this may
 		// change when permissivity is checked.
 		PendingApproval: util.Ptr(false),
+
+		CardID: card.ID,
+
+		Card: card,
 	}
 
 	// Only store ContentWarningText if the parsed
@@ -263,7 +271,7 @@ func (p *Processor) Create(
 		// Update the status' ActivityPub type to Question.
 		status.ActivityStreamsType = ap.ActivityQuestion
 	}
-
+	// TODO: it is here!!!
 	// Insert this newly prepared status into the database.
 	if err := p.state.DB.PutStatus(ctx, status); err != nil {
 		err := gtserror.Newf("error inserting status in db: %w", err)

@@ -333,6 +333,7 @@ func (s *statusDB) PutStatus(ctx context.Context, status *gtsmodel.Status) error
 		// It is safe to run this database transaction within cache.Store
 		// as the cache does not attempt a mutex lock until AFTER hook.
 		//
+		// TODO: it is probably here!!
 		return s.db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
 			// create links between this status and any emojis it uses
 			for _, i := range status.EmojiIDs {
